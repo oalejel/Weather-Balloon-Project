@@ -6,8 +6,6 @@
 #include "Seeed_BME280.h"
 #include <Wire.h>
 
- 
- 
 //! tweak this in case you dont want too much data or a big file size
 int millisecondsDelay = 3000;
 long int interval = 0;
@@ -68,6 +66,9 @@ void loop() {
   float purpleCelsiusTemp = bme280.getTemperature();
   //altitude calculation dependent on pressure
   float purpleAltitudeMeters = bme280.calcAltitude(purplePascalPressure);
+
+  //consider averaging between temperature sensors when the purple 
+  //one is above 0
 
   //open the data file every time we loop
   File records = SD.open("data.csv", FILE_WRITE);
