@@ -1,13 +1,13 @@
 #include <SD.h>
 #include <SPI.h>
 //white sensor (temp and humidity) library
-#include <DHT.h>;
+#include <DHT.h>
 //purple sensor (precise temperature, pressure, and altitude) library 
 #include "Seeed_BME280.h"
 #include <Wire.h>
 
 //! tweak this in case you dont want too much data or a big file size
-int millisecondsDelay = 1000;
+int millisecondsDelay = 3000;
 long int interval = 0;
 
 //white sensor variables
@@ -45,8 +45,10 @@ void setup() {
 
   //ensure that this matches the order of data logged
   records.write("\"Elapsed time (seconds)\",");
-  records.write("\"Altitude (Meters)\",");
-  records.write("\"Temperature (Celsius)\"\n");
+  records.write("\"Temperature (celsius)\",");
+  records.write("\"Humidity (%)\",");
+  records.write("\"Pressure (pascals)\",");
+  records.write("\"Altitude (meters)\"\n");
 
   //must close file to save things written to it properly
   records.close();
@@ -57,7 +59,7 @@ void loop() {
   float whiteHumidityPercent = dht.readHumidity();
   //this temp variable is btter than that of the other sensor,
   //since the DHT sensor measures degrees C below 0
-  float whiteCelciusTemp = dht.readTemperature();
+  float whiteCelsiusTemp = dht.readTemperature();
 
   float purpleHumidityPercent = bme280.getHumidity();
   float purplePascalPressure = bme280.getPressure();
@@ -68,23 +70,55 @@ void loop() {
   //open the data file every time we loop
   File records = SD.open("data.csv", FILE_WRITE);
 
-  
   //transform float -> string -> char array
-  String temp = String(whiteCelciusTemp);
+  int s = millis() / 1000.0;
+  String timeSeconds = String(s);
+  char timeBuffer[100];
+  timeSeconds.toCharArray(timeBuffer, 100);
+  
+  String temp = String(whiteCelsiusTemp);
   char tempBuffer[7];
   temp.toCharArray(tempBuffer, 7);
 
   String humidity = String(purpleHumidityPercent);
   char humidityBuffer[7];
   humidity.toCharArray(humidityBuffer, 7);
-  
-  //add a comma and new line
-  records.write(",");
-  //write the char array to the file
-  records.write(tempBuffer);
-  //add a comma and new line
-  records.write(",");
 
+  String pressure = String(purplePascalPressure);
+  char pressureBuffer[7];
+  pressure.toCharArray(pressureBuffer, 7);
+
+  String altitude = String(purpleAltitudeMeters);
+  char altitudeBuffer[7];
+  altitude.toCharArray(altitudeBuffer, 7);
+
+  //debug: write to serial
+  Serial.print("time: ");
+  Serial.println(timeSeconds);
+  Serial.print("temp: ");
+  Serial.print(temp);
+  Serial.println(" C");
+  Serial.print("humidity: ");
+  Serial.print(humidity);
+  Serial.println("%");
+  Serial.print("pressure: ");
+  Serial.print(pressure);
+  Serial.println(" Pa");
+  Serial.print("altitude: ");
+  Serial.print(altitude);
+  Serial.println(" m");
+   Serial.println(" \n\n");
+
+  //for each data point in a row, write() the buffer, and have a comma in between
+  records.write(timeBuffer);
+  records.write(",");
+  records.write(tempBuffer);
+  records.write(",");
+  records.write(humidityBuffer);
+  records.write(",");
+  records.write(pressureBuffer);
+  records.write(",");
+  records.write(altitudeBuffer);
 
   //new line for a new loop. DO NOT MODIFY BELOW!!!
   records.write("\n");
