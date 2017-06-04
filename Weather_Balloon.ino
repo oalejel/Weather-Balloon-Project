@@ -7,6 +7,7 @@
 #include <Wire.h>
 
  
+ 
 //! tweak this in case you dont want too much data or a big file size
 int millisecondsDelay = 3000;
 long int interval = 0;
