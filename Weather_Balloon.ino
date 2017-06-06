@@ -45,7 +45,8 @@ void setup() {
 
   //ensure that this matches the order of data logged
   records.write("\"Elapsed time (seconds)\",");
-  records.write("\"Temperature (celsius)\",");
+  records.write("\"Temperature White (celsius)\",");
+  records.write("\"Temperature Purple (celsius)\",");
   records.write("\"Humidity (%)\",");
   records.write("\"Pressure (pascals)\",");
   records.write("\"Altitude (meters)\"\n");
@@ -80,8 +81,12 @@ void loop() {
   timeSeconds.toCharArray(timeBuffer, 100);
   
   String temp = String(whiteCelsiusTemp);
-  char tempBuffer[7];
-  temp.toCharArray(tempBuffer, 7);
+  char tempBufferWhite[7];
+  temp.toCharArray(tempBufferWhite, 7);
+
+  String temp2 = String(purpleCelsiusTemp);
+  char tempBufferPurple[7];
+  temp2.toCharArray(tempBufferPurple, 7);
 
   String humidity = String(purpleHumidityPercent);
   char humidityBuffer[7];
@@ -115,7 +120,9 @@ void loop() {
   //for each data point in a row, write() the buffer, and have a comma in between
   records.write(timeBuffer);
   records.write(",");
-  records.write(tempBuffer);
+  records.write(tempBufferWhite);
+  records.write(",");
+  records.write(tempBufferPurple);
   records.write(",");
   records.write(humidityBuffer);
   records.write(",");
